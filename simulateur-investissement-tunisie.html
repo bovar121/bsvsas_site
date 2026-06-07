@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulateur d'investissement immobilier locatif en Tunisie | BSV</title>
+<meta name="description" content="Simulateur gratuit pour calculer le rendement d'un investissement immobilier locatif en Tunisie : frais d'acquisition, mensualité de prêt, cash-flow, projections patrimoniales sur 15 ans.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Simulateur d'investissement immobilier Tunisie">
+<meta property="og:description" content="Calculez en temps réel le rendement de votre projet immobilier en Tunisie : frais d'acquisition selon le barème 2026, prêt BIAT, revenus Airbnb ou bail long, projections sur 15 ans.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='10' y='15' width='80' height='32' rx='14' fill='%23EC6C0A'/%3E%3Crect x='10' y='53' width='66' height='32' rx='14' fill='%23EC6C0A'/%3E%3C/svg%3E">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<style>
+
+  :root {
+    --orange: #EC6C0A;
+    --orange-dark: #D65E05;
+    --charbon: #151515;
+    --charbon-soft: #2A2A2A;
+    --ivoire: #FAFAF8;
+    --ivoire-warm: #F2F1EC;
+    --gris: #6B6B6B;
+    --gris-light: #E5E4DF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--ivoire);
+    color: var(--charbon);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+  /* ============ HEADER ============ */
+  header.site-header {
+    position: sticky;
+    top: 0;
+    background: rgba(250, 250, 248, 0.85);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid transparent;
+    z-index: 100;
+    transition: border-color 0.2s ease;
+  }
+  header.site-header.scrolled { border-bottom-color: var(--gris-light); }
+  .nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+  .logo-link { display: flex; align-items: center; text-decoration: none; }
+  .logo-link svg { height: 36px; width: auto; }
+  .nav-links { display: flex; gap: 40px; align-items: center; }
+  .nav-links a {
+    color: var(--charbon);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    transition: color 0.2s ease;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--orange); }
+  .btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: var(--orange);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  .btn:hover { background: var(--orange-dark); }
+  .btn:active { transform: translateY(1px); }
+  .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+  .menu-toggle span { display: block; width: 24px; height: 2px; background: var(--charbon); margin: 5px 0; transition: 0.3s; }
+
+  /* ============ EN-TETE DE PAGE ============ */
+  .page-hero { padding: 64px 0 12px; }
+  .section-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--orange);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::before { content: ''; width: 32px; height: 2px; background: var(--orange); }
+  .page-hero h1 {
+    font-size: clamp(30px, 4.5vw, 48px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+    color: var(--charbon);
+  }
+  .page-hero h1 .accent { color: var(--orange); }
+  .page-intro {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--gris);
+    max-width: 780px;
+    letter-spacing: -0.01em;
+  }
+  .simu-section { padding: 36px 0 96px; }
+
+  /* ============ FOOTER ============ */
+  footer.site-footer {
+    background: var(--charbon);
+    color: rgba(250, 250, 248, 0.6);
+    padding: 48px 0 32px;
+    border-top: 1px solid rgba(250, 250, 248, 0.08);
+  }
+  .footer-grid { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
+  .footer-logo svg { height: 32px; }
+  .footer-legal { display: flex; gap: 32px; font-size: 14px; flex-wrap: wrap; }
+  .footer-legal a { color: rgba(250, 250, 248, 0.6); text-decoration: none; transition: color 0.2s ease; }
+  .footer-legal a:hover { color: var(--orange); }
+  .footer-copyright { font-size: 13px; color: rgba(250, 250, 248, 0.4); }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 640px) {
+    .container { padding: 0 20px; }
+    .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--ivoire); flex-direction: column; padding: 24px; gap: 20px; border-bottom: 1px solid var(--gris-light); }
+    .nav-links.open { display: flex; }
+    .menu-toggle { display: block; }
+    .page-hero { padding: 40px 0 4px; }
+    .simu-section { padding: 28px 0 72px; }
+    .page-intro { font-size: 15px; }
+    .footer-grid { flex-direction: column; text-align: center; }
+  }
+
+/* ===================== SIMULATEUR (styles isolés) ===================== */
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --card-bg: #ffffff;
+  --card-dark-bg: #151515;
+  --border: #E5E4DF;
+  --text: #151515;
+  --text-muted: #6B6B6B;
+  --accent: #EC6C0A;
+  --accent-light: #F18A3B;
+  --positive: #16a34a;
+  --negative: #dc2626;
+  --warning: #d97706;
+}
+#simu {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+#simu .simu-header {
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+#simu .simu-header .simu-title {
+  font-size: 22px;
+  margin: 0 0 4px;
+  color: var(--accent);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+#simu .simu-header p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+#simu .pdf-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s, transform 0.05s;
+  font-family: inherit;
+}
+#simu .pdf-btn:hover {
+  background: #1e40af;
+}
+#simu .pdf-btn:active {
+  transform: scale(0.97);
+}
+#simu .pdf-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+#simu .kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 24px;
+}
+#simu .kpi-card {
+  background: var(--card-dark-bg);
+  color: white;
+  padding: 14px 16px;
+  border-radius: 10px;
+}
+#simu .kpi-card .label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+  margin-bottom: 6px;
+}
+#simu .kpi-card .value {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+#simu .kpi-card .sub {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-top: 4px;
+  font-weight: 500;
+}
+#simu .kpi-card .breakeven {
+  font-size: 11px;
+  color: #ffffff;
+  opacity: 1;
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  line-height: 1.35;
+}
+#simu .kpi-card .breakeven .be-label {
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  display: block;
+  font-size: 9px;
+  margin-bottom: 2px;
+  color: #ffffff;
+  opacity: 1;
+}
+#simu .kpi-card .breakeven .be-value {
+  font-weight: 700;
+  font-size: 12px;
+  color: #ffffff;
+  opacity: 1;
+}
+#simu .kpi-card .breakeven .be-delta {
+  font-size: 10px;
+  margin-left: 4px;
+  color: #ffffff;
+  opacity: 1;
+}
+#simu .kpi-card.positive .value { color: #4ade80; }
+#simu .kpi-card.negative .value { color: #f87171; }
+#simu .section {
+  margin-bottom: 22px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+#simu .section h2 {
+  margin: 0 0 14px;
+  font-size: 15px;
+  color: var(--accent);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#simu .section h2 .badge {
+  background: var(--accent);
+  color: white;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  min-width: 22px;
+  text-align: center;
+}
+#simu .input-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+}
+#simu .input-group {
+  display: flex;
+  flex-direction: column;
+}
+#simu .input-group label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+#simu .input-group input[type="number"], #simu .input-group input[type="text"], #simu .input-group select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  color: var(--text);
+  width: 100%;
+}
+#simu .input-group input[type="number"]:focus, #simu .input-group input[type="text"]:focus, #simu .input-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+#simu .input-group.compact input[type="number"] {
+  max-width: 95px;
+}
+#simu .input-meta {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 600;
+}
+#simu .input-meta .eur {
+  font-weight: 500;
+}
+#simu .input-help {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: rgba(236, 108, 10, 0.06);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.45;
+}
+#simu .input-help strong {
+  color: var(--accent);
+}
+#simu .input-help .help-detail {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 11.5px;
+}
+#simu .input-help em {
+  font-style: italic;
+  color: var(--text);
+}
+#simu .tranche-alert {
+  padding: 9px 12px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  margin-bottom: 12px;
+  line-height: 1.45;
+}
+#simu .tranche-alert.ok {
+  background: rgba(22, 163, 74, 0.08);
+  border-left: 3px solid var(--positive);
+  color: #14532d;
+}
+#simu .tranche-alert.warn {
+  background: rgba(217, 119, 6, 0.10);
+  border-left: 3px solid var(--warning);
+  color: #78350f;
+}
+#simu .tranche-alert.danger {
+  background: rgba(220, 38, 38, 0.08);
+  border-left: 3px solid var(--negative);
+  color: #7f1d1d;
+}
+#simu .tranche-alert strong {
+  font-weight: 700;
+}
+#simu .tranche-alert .icon {
+  font-size: 14px;
+  margin-right: 4px;
+}
+#simu .input-group.wide {
+  grid-column: span 2;
+}
+@media (max-width: 700px) {
+#simu .input-group.wide { grid-column: span 1; }
+}
+#simu .input-flex-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-end;
+}
+#simu .input-flex-row > .input-group {
+  flex: 1 1 150px;
+  min-width: 130px;
+}
+#simu .input-flex-row > .input-group.compact {
+  flex: 0 0 100px;
+  min-width: 0;
+}
+#simu .input-flex-row > .input-group.wide {
+  flex: 0 1 auto;
+  grid-column: auto;
+  min-width: 0;
+}
+#simu .input-group input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+#simu .range-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-left: 6px;
+}
+#simu .radio-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+#simu .radio-group label {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 11px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text);
+  margin-bottom: 0;
+  user-select: none;
+  transition: all 0.15s;
+}
+#simu .radio-group label:hover {
+  border-color: var(--accent);
+}
+#simu .radio-group label.selected {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+#simu .results-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+#simu .results-table th, #simu .results-table td {
+  padding: 9px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+#simu .results-table th {
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+#simu .results-table td {
+  font-size: 14px;
+}
+#simu .results-table tr:last-child td { border-bottom: none; }
+#simu .results-table tr.highlight td {
+  font-weight: 700;
+  background: rgba(236, 108, 10, 0.06);
+}
+#simu .tnd { font-weight: 700; color: var(--text); }
+#simu .eur { font-size: 13px; color: #475569; margin-left: 7px; font-weight: 500; }
+#simu .positive { color: var(--positive); font-weight: 700; }
+#simu .negative { color: var(--negative); font-weight: 700; }
+#simu .subcard {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 14px;
+}
+#simu .subcard h3 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+#simu .charts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 900px) {
+#simu .charts-grid { grid-template-columns: 1fr 1fr; }
+#simu .chart-full { grid-column: 1 / -1; }
+}
+#simu .chart-container {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  height: 340px;
+  display: flex;
+  flex-direction: column;
+}
+#simu .chart-container h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 600;
+}
+#simu .chart-canvas-wrapper {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+#simu .comparison-table tr.current td {
+  background: rgba(236, 108, 10, 0.08);
+  font-weight: 700;
+}
+#simu .simu-footer {
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* --- Ajouts intégration BSV / mobile --- */
+#simu .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+#simu .table-scroll .results-table { width: 100%; }
+@media (max-width: 700px) {
+  #simu .simu-header { flex-direction: column; align-items: flex-start; }
+  #simu .chart-container { height: 280px; }
+}
+
+</style>
+</head>
+<body>
+
+<header class="site-header" id="site-header">
+  <div class="container">
+    <nav class="nav">
+      <a href="index.html" class="logo-link" aria-label="BSV — Accueil">
+        <svg viewBox="0 0 420 120" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="20" width="80" height="38" rx="15" fill="#EC6C0A"/>
+          <rect x="20" y="62" width="66" height="38" rx="15" fill="#EC6C0A"/>
+          <text x="140" y="95" font-family="Inter, sans-serif" font-size="100" font-weight="800" fill="#151515" letter-spacing="-5">BSV</text>
+        </svg>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html#expertises">Expertises</a>
+        <a href="index.html#approche">Approche</a>
+        <a href="simulateur-investissement-tunisie.html" class="active">Simulateur</a>
+        <a href="index.html#contact">Contact</a>
+        <a href="index.html#contact" class="btn">Nous contacter</a>
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="page-hero">
+    <div class="container">
+      <span class="section-label">Outils</span>
+      <h1>Simulateur d'investissement <span class="accent">immobilier</span> — Tunisie.</h1>
+      <p class="page-intro">Cet outil interactif vous permet de simuler un investissement immobilier locatif en Tunisie : frais d'acquisition (barème tunisien 2026), mensualité de prêt, revenus locatifs (Airbnb, longue durée ou sans locatif), cash-flow opérationnel et projections patrimoniales sur la durée du prêt, avec indexation des loyers sur l'inflation. Toutes les valeurs sont modifiables en temps réel.</p>
+    </div>
+  </section>
+
+  <section class="simu-section">
+    <div class="container">
+      <div id="simu">
+
+  <div class="simu-header">
+    <h2 class="simu-title">
+      Simulateur d'investissement TUN
+      <svg viewBox="0 0 60 40" width="38" height="25" aria-label="Drapeau de la Tunisie" style="vertical-align: middle; margin-left: 8px; border-radius: 3px; box-shadow: 0 1px 3px rgba(0,0,0,0.18);">
+        <rect width="60" height="40" fill="#E70013"/>
+        <circle cx="30" cy="20" r="10" fill="#FFFFFF"/>
+        <circle cx="28" cy="20" r="7" fill="#E70013"/>
+        <circle cx="30.5" cy="20" r="5.5" fill="#FFFFFF"/>
+        <polygon points="32,17.5 32.588,19.191 34.378,19.227 32.951,20.309 33.469,22.023 32,21 30.531,22.023 31.049,20.309 29.622,19.227 31.412,19.191" fill="#E70013"/>
+      </svg>
+    </h2>
+    <button class="pdf-btn" id="pdf-btn" type="button" title="Télécharger le simulateur en PDF">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M14 2v6h6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 18v-6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="m9 15 3 3 3-3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Télécharger PDF
+    </button>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid" id="kpis"></div>
+
+  <!-- Bloc 0 — Informations du projet (purement descriptif) -->
+  <div class="section">
+    <h2><span class="badge">0</span> Informations du projet</h2>
+    <div class="input-grid">
+      <div class="input-group">
+        <label for="info-surface" title="Surface du bien (informatif, n'influence pas les calculs)">Surface</label>
+        <input type="text" id="info-surface" value="S+1, 68 m² habitable + terrasse 17 m²">
+      </div>
+      <div class="input-group">
+        <label for="info-localisation" title="Localisation du bien (informatif, n'influence pas les calculs)">Localisation</label>
+        <input type="text" id="info-localisation" value="Résidence Malaga 2 · Sidi Daoud / La Marsa · Tunisie · Livraison avril 2026">
+      </div>
+    </div>
+  </div>
+
+  <!-- Bloc 1 -->
+  <div class="section">
+    <h2><span class="badge">1</span> Acquisition</h2>
+    <div class="input-grid">
+      <div class="input-group">
+        <label for="prix" title="Prix d'acquisition TTC en dinars tunisiens">Prix d'acquisition TTC (TND)</label>
+        <input type="number" id="prix" value="385000" min="200000" max="1500000" step="1000">
+      </div>
+      <div class="input-group">
+        <label for="apport" title="Pourcentage du prix payé en cash">Apport (%) <span class="range-value" id="apport-value">20 %</span></label>
+        <input type="range" id="apport" value="20" min="10" max="50" step="1">
+        <div class="input-meta" id="apport-meta"></div>
+      </div>
+      <div class="input-group">
+        <label for="change" title="Taux de change EUR/TND (1 EUR = ? TND)">Taux de change EUR/TND</label>
+        <input type="number" id="change" value="3.40" min="3.00" max="4.00" step="0.01">
+      </div>
+    </div>
+  </div>
+
+  <!-- Bloc 2 -->
+  <div class="section">
+    <h2><span class="badge">2</span> Frais d'acquisition</h2>
+    <div class="input-grid">
+      <div class="input-group wide">
+        <label title="Le barème fiscal tunisien diffère radicalement selon le type de vendeur.">Type de vendeur</label>
+        <div class="radio-group" id="vendeur-group">
+          <label data-value="neuf" class="selected" title="Bien neuf acheté à un promoteur immobilier agréé (régime favorable : CPF 1% + droit fixe sous 500K TND)">Neuf (promoteur agréé)</label>
+          <label data-value="ancien" title="Bien ancien acheté à un particulier (régime lourd : 6/8/10 % du prix selon la tranche)">Ancien (particulier)</label>
+        </div>
+      </div>
+      <div class="input-group">
+        <label for="notaire" title="Honoraires du notaire en pourcentage du prix. Sources : 1 % à 5 % en Tunisie.">Honoraires notaire (%) <span class="range-value" id="notaire-value">1,5 %</span></label>
+        <input type="range" id="notaire" value="1.5" min="0.5" max="5" step="0.1">
+      </div>
+      <div class="input-group" id="pages-group">
+        <label for="pages" title="Nombre de pages de l'acte (utilisé si prix &lt; 500 000 TND, 30 TND par page) — applicable au régime neuf/promoteur uniquement">Nombre de pages d'acte</label>
+        <input type="number" id="pages" value="10" min="1" max="50" step="1">
+      </div>
+    </div>
+    <div class="subcard">
+      <h3>Décomposition (barème Tunisie 2026, promoteur agréé)</h3>
+      <div id="tranche-alert"></div>
+      <div class="table-scroll"><table class="results-table" id="frais-detail"></table></div>
+    </div>
+  </div>
+
+  <!-- Bloc 3 — fusionné avec la Section B (résultats du prêt) -->
+  <div class="section">
+    <h2><span class="badge">3</span> Prêt BIAT</h2>
+    <div class="input-grid">
+      <div class="input-group">
+        <label for="taux" title="Taux annuel nominal">Taux annuel nominal (%) <span class="range-value" id="taux-value">11 %</span></label>
+        <input type="range" id="taux" value="11" min="3.5" max="14" step="0.1">
+      </div>
+      <div class="input-group">
+        <label title="Durée du prêt en années">Durée du prêt (années)</label>
+        <div class="radio-group" id="duree-group">
+          <label data-value="7">7</label>
+          <label data-value="10">10</label>
+          <label data-value="15" class="selected">15</label>
+          <label data-value="20">20</label>
+          <label data-value="25">25</label>
+        </div>
+      </div>
+    </div>
+    <div class="subcard">
+      <h3>Résultats du prêt</h3>
+      <div class="table-scroll"><table class="results-table" id="recap-pret"></table></div>
+    </div>
+  </div>
+
+  <!-- Bloc 4 -->
+  <div class="section">
+    <h2><span class="badge">4</span> Revenus locatifs</h2>
+
+    <!-- Sélecteur de mode -->
+    <div class="input-group" style="margin-bottom: 14px;">
+      <label title="Mode de location appliqué au bien">Mode de location</label>
+      <div class="radio-group" id="mode-locatif-group">
+        <label data-value="aucun" title="Aucun revenu locatif (résidence principale, secondaire personnelle, etc.)">Pas de locatif</label>
+        <label data-value="longueduree" title="Bail classique longue durée (1 an renouvelable) — loyer mensuel fixe">Longue durée (bail annuel)</label>
+        <label data-value="airbnb" class="selected" title="Location saisonnière courte durée — tarifs variables BS/HS, taux de remplissage">Airbnb (courte durée)</label>
+      </div>
+    </div>
+
+    <!-- Mode : pas de locatif -->
+    <div id="inputs-aucun" style="display:none;">
+      <div class="input-help">
+        <strong>Aucun revenu locatif modélisé.</strong>
+        <span class="help-detail">Le bien n'est pas mis en location (résidence principale, secondaire, attente de revente, etc.). Le cash-flow sera entièrement négatif puisque la mensualité du prêt n'est compensée par aucun revenu.</span>
+      </div>
+    </div>
+
+    <!-- Mode : longue durée -->
+    <div id="inputs-longueduree" style="display:none;">
+      <div class="input-flex-row">
+        <div class="input-group">
+          <label for="loyer-mensuel" title="Loyer mensuel brut perçu (en TND)">Loyer mensuel (TND)</label>
+          <input type="number" id="loyer-mensuel" value="1500" min="300" max="10000" step="50">
+        </div>
+        <div class="input-group">
+          <label for="frais-gestion" title="Frais d'agence ou de gestion locative en % du loyer brut. 0 % si gestion en direct, 5-10 % si agence.">Frais de gestion (%) <span class="range-value" id="frais-gestion-value">5 %</span></label>
+          <input type="range" id="frais-gestion" value="5" min="0" max="15" step="0.5">
+        </div>
+        <div class="input-group">
+          <label for="vacance" title="Vacance locative annuelle moyenne en % (8 % ≈ 1 mois de vacance par an).">Vacance locative (%) <span class="range-value" id="vacance-value">8 %</span></label>
+          <input type="range" id="vacance" value="8" min="0" max="30" step="0.5">
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode : Airbnb (par défaut) -->
+    <div id="inputs-airbnb">
+      <div class="input-flex-row">
+        <div class="input-group compact">
+          <label for="tarif-bs" title="Tarif moyen par nuit en basse saison">Tarif basse saison (€/nuit)</label>
+          <input type="number" id="tarif-bs" value="50" min="30" max="100" step="1">
+        </div>
+        <div class="input-group compact">
+          <label for="tarif-hs" title="Tarif moyen par nuit en haute saison">Tarif haute saison (€/nuit)</label>
+          <input type="number" id="tarif-hs" value="85" min="50" max="200" step="1">
+        </div>
+        <div class="input-group">
+          <label for="remplissage" title="Pourcentage de nuits louées sur l'année">Taux de remplissage (%) <span class="range-value" id="remplissage-value">70 %</span></label>
+          <input type="range" id="remplissage" value="70" min="20" max="90" step="1">
+        </div>
+        <div class="input-group wide">
+          <label title="Répartition des nuits entre basse et haute saison">Découpage saisonnier</label>
+          <div class="radio-group" id="decoupage-group">
+            <label data-value="A" title="50 % basse saison / 50 % haute saison">A : 50/50</label>
+            <label data-value="B" class="selected" title="Modèle ChatGPT : 274 j basse saison + 91 j haute saison, même taux de remplissage des deux côtés (≈ ¾ BS / ¼ HS des nuits louées)">B : ¼ HS / ¾ BS</label>
+            <label data-value="C" title="Saison haute porteuse : 2/3 des nuits en haute saison, 1/3 en basse saison">C : ⅔ HS / ⅓ BS</label>
+          </div>
+        </div>
+        <div class="input-group">
+          <label for="frais-globaux" title="Commissions plateformes + ménage + gestion + assurance + vacance">Frais globaux (%) <span class="range-value" id="frais-globaux-value">23 %</span></label>
+          <input type="range" id="frais-globaux" value="23" min="10" max="40" step="1">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bloc 5 -->
+  <div class="section">
+    <h2><span class="badge">5</span> Hypothèses patrimoniales</h2>
+    <div class="input-grid">
+      <div class="input-group">
+        <label for="valorisation">Valorisation annuelle du bien (%) <span class="range-value" id="valorisation-value">5,8 %</span></label>
+        <input type="range" id="valorisation" value="5.8" min="0" max="10" step="0.1">
+        <div class="input-help" id="valorisation-help">
+          <strong>Défaut 5,8 %</strong> = moyenne d'inflation tunisienne sur 15 ans (2011-2025).
+          <span class="help-detail">
+            En dessous : valorisation <em>réelle</em> négative (le bien perd du pouvoir d'achat).
+            7-8 % : vise une plus-value réelle, défendable sur les zones premium côtières (La Marsa, Sidi Bou Saïd).
+          </span>
+        </div>
+      </div>
+      <div class="input-group">
+        <label for="indexation-loyers">Indexation annuelle des loyers (%) <span class="range-value" id="indexation-loyers-value">5,8 %</span></label>
+        <input type="range" id="indexation-loyers" value="5.8" min="0" max="10" step="0.1">
+        <div class="input-help">
+          <strong>Défaut 5,8 %</strong> = aligné sur l'inflation et la valorisation du bien.
+          <span class="help-detail">
+            Loyers et tarifs Airbnb supposés suivre l'inflation chaque année.
+            0 % : tarifs figés (perdent du pouvoir d'achat). Au-dessus de 5,8 % : indexation plus rapide que l'inflation, scénario optimiste.
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section A -->
+  <div class="section">
+    <h2><span class="badge">A</span> Récapitulatif acquisition</h2>
+    <div class="table-scroll"><table class="results-table" id="recap-acquisition"></table></div>
+  </div>
+
+  <!-- Section C -->
+  <div class="section">
+    <h2><span class="badge">C</span> Revenus locatifs</h2>
+    <div class="table-scroll"><table class="results-table" id="recap-revenus"></table></div>
+  </div>
+
+  <!-- Section D -->
+  <div class="section">
+    <h2><span class="badge">D</span> Cash-flow opérationnel</h2>
+    <div class="table-scroll"><table class="results-table" id="recap-cashflow"></table></div>
+    <div class="subcard">
+      <h3>Comparatif des durées de prêt (cash-flow mensuel)</h3>
+      <div class="table-scroll"><table class="results-table comparison-table" id="comparatif-durees"></table></div>
+    </div>
+  </div>
+
+  <!-- Section E -->
+  <div class="section">
+    <h2><span class="badge">E</span> Bilan patrimonial &amp; projections de revenus</h2>
+    <div class="table-scroll"><table class="results-table" id="recap-patrimoine"></table></div>
+  </div>
+
+  <!-- Section F -->
+  <div class="section">
+    <h2><span class="badge">F</span> Graphiques</h2>
+    <div class="charts-grid">
+      <div class="chart-container chart-full">
+        <h3>Cash-flow mensuel projeté année par année (loyers indexés)</h3>
+        <div class="chart-canvas-wrapper"><canvas id="chart-cashflow"></canvas></div>
+      </div>
+      <div class="chart-container chart-full">
+        <h3>Évolution valeur du bien vs capital restant dû (TND)</h3>
+        <div class="chart-canvas-wrapper"><canvas id="chart-patrimoine"></canvas></div>
+      </div>
+      <div class="chart-container chart-full">
+        <h3>Équité construite année par année (valeur du bien − capital restant dû)</h3>
+        <div class="chart-canvas-wrapper"><canvas id="chart-equite"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="simu-footer" id="footer">
+    Simulation indicative — paramètres à valider avec BIAT et notaire tunisien
+  </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-logo">
+        <svg viewBox="0 0 420 120" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="20" width="80" height="38" rx="15" fill="#EC6C0A"/>
+          <rect x="20" y="62" width="66" height="38" rx="15" fill="#EC6C0A"/>
+          <text x="140" y="95" font-family="Inter, sans-serif" font-size="100" font-weight="800" fill="#FAFAF8" letter-spacing="-5">BSV</text>
+        </svg>
+      </div>
+      <div class="footer-legal">
+        <a href="index.html">Accueil</a>
+        <a href="index.html#contact">Contact</a>
+        <a href="mailto:contact@bsv.fr">contact@bsv.fr</a>
+      </div>
+      <div class="footer-copyright">© 2026 BSV. Tous droits réservés.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+
+  // Header scroll state
+  const siteHeader = document.getElementById('site-header');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 10) siteHeader.classList.add('scrolled');
+    else siteHeader.classList.remove('scrolled');
+  });
+  // Mobile menu
+  const toggle = document.getElementById('menuToggle');
+  const links = document.getElementById('navLinks');
+  toggle.addEventListener('click', () => links.classList.toggle('open'));
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => links.classList.remove('open'));
+  });
+
+</script>
+
+<script>
+
+// === Formatage français (espaces insécables comme séparateurs de milliers) ===
+const fmtTND = (v) => isFinite(v) ? new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 0}).format(Math.round(v)) + ' TND' : '—';
+const fmtEUR = (v) => isFinite(v) ? new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 0}).format(Math.round(v)) + ' €' : '—';
+const fmtPct = (v) => isFinite(v) ? new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 1}).format(v) + ' %' : '—';
+const fmtNum = (v) => isFinite(v) ? new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 0}).format(Math.round(v)) : '—';
+
+function cellTND(tnd, change) {
+  const eur = tnd / change;
+  return `<span class="tnd">${fmtTND(tnd)}</span><span class="eur">(${fmtEUR(eur)})</span>`;
+}
+
+function getDuree() {
+  const el = document.querySelector('#duree-group label.selected');
+  return el ? parseInt(el.dataset.value, 10) : 15;
+}
+function getDecoupage() {
+  const el = document.querySelector('#decoupage-group label.selected');
+  return el ? el.dataset.value : 'B';
+}
+function getTypeVendeur() {
+  const el = document.querySelector('#vendeur-group label.selected');
+  return el ? el.dataset.value : 'neuf';
+}
+function getModeLocatif() {
+  const el = document.querySelector('#mode-locatif-group label.selected');
+  return el ? el.dataset.value : 'airbnb';
+}
+
+// === Barème tunisien 2026 — calcul des frais d'acquisition selon le type de vendeur ===
+// Sources : Bigdatis, Century 21 Tunisie, Note Commune 07/2022 du Ministère des Finances.
+function calcFrais(prix, notairePct, nbPages, typeVendeur) {
+  const notaire = (notairePct / 100) * prix;
+
+  if (typeVendeur === 'ancien') {
+    // Bien ancien acheté à un particulier : barème global plus lourd
+    // 6 % / 8 % / 10 % du prix total selon la tranche
+    let droitEnreg;
+    if (prix < 500000) droitEnreg = 0.06 * prix;
+    else if (prix < 1000000) droitEnreg = 0.08 * prix;
+    else droitEnreg = 0.10 * prix;
+    return {
+      cpf: 0,                // pas mentionné séparément dans le barème ancien
+      droitEnreg,
+      droitCompl: 0,         // déjà intégré dans le taux global 6/8/10 %
+      notaire,
+      total: droitEnreg + notaire
+    };
+  }
+
+  // Cas par défaut : bien neuf chez promoteur agréé
+  const cpf = 0.01 * prix; // toujours 1 %
+  let droitEnreg;
+  if (prix < 500000) droitEnreg = nbPages * 30; // droit fixe
+  else droitEnreg = 0.03 * (prix - 500000);
+  let droitCompl;
+  if (prix < 500000) droitCompl = 0;
+  else if (prix < 1000000) droitCompl = 0.02 * prix;
+  else droitCompl = 0.04 * prix;
+  return { cpf, droitEnreg, droitCompl, notaire, total: cpf + droitEnreg + droitCompl + notaire };
+}
+
+// === PMT : mensualité d'un prêt amortissable ===
+function calcMensualite(K, tauxAnnuelPct, dureeAnnees) {
+  if (K <= 0) return 0;
+  const i = tauxAnnuelPct / 100 / 12;
+  const n = dureeAnnees * 12;
+  if (i === 0) return K / n;
+  return K * i / (1 - Math.pow(1 + i, -n));
+}
+
+// === CRD : capital restant dû après n mois écoulés ===
+function calcCRD(K, tauxAnnuelPct, dureeAnnees, moisEcoules) {
+  const i = tauxAnnuelPct / 100 / 12;
+  const N = dureeAnnees * 12;
+  const n = Math.min(moisEcoules, N);
+  if (n >= N) return 0;
+  if (i === 0) return K * (1 - n / N);
+  return K * (Math.pow(1 + i, N) - Math.pow(1 + i, n)) / (Math.pow(1 + i, N) - 1);
+}
+
+// === Revenus bruts annuels en EUR selon découpage saisonnier ===
+function calcRevenusBrutsEUR(nuits, tarifBS, tarifHS, decoupage) {
+  if (decoupage === 'A') {
+    // 50 % des nuits en BS, 50 % en HS
+    return (nuits / 2) * tarifBS + (nuits / 2) * tarifHS;
+  }
+  if (decoupage === 'C') {
+    // 1/3 des nuits en BS, 2/3 en HS (saison concentrée porteuse)
+    return (nuits / 3) * tarifBS + (nuits * 2 / 3) * tarifHS;
+  }
+  // Option B (défaut, modèle ChatGPT) : 274 j BS / 91 j HS
+  // → application du même taux de remplissage à chaque saison sur sa durée réelle
+  // → 274/365 ≈ 75 % des nuits en BS, 91/365 ≈ 25 % en HS
+  return (nuits * 274 / 365) * tarifBS + (nuits * 91 / 365) * tarifHS;
+}
+
+let charts = {};
+
+function getInputs() {
+  return {
+    prix: parseFloat(document.getElementById('prix').value) || 0,
+    apportPct: parseFloat(document.getElementById('apport').value) || 0,
+    change: parseFloat(document.getElementById('change').value) || 1,
+    notairePct: parseFloat(document.getElementById('notaire').value) || 0,
+    nbPages: parseInt(document.getElementById('pages').value, 10) || 0,
+    tauxPct: parseFloat(document.getElementById('taux').value) || 0,
+    duree: getDuree(),
+    tarifBS: parseFloat(document.getElementById('tarif-bs').value) || 0,
+    tarifHS: parseFloat(document.getElementById('tarif-hs').value) || 0,
+    remplissage: parseFloat(document.getElementById('remplissage').value) || 0,
+    decoupage: getDecoupage(),
+    fraisGlobaux: parseFloat(document.getElementById('frais-globaux').value) || 0,
+    valorisation: parseFloat(document.getElementById('valorisation').value) || 0,
+    indexationLoyers: parseFloat(document.getElementById('indexation-loyers').value) || 0,
+    typeVendeur: getTypeVendeur(),
+    modeLocatif: getModeLocatif(),
+    loyerMensuel: parseFloat(document.getElementById('loyer-mensuel').value) || 0,
+    fraisGestion: parseFloat(document.getElementById('frais-gestion').value) || 0,
+    vacance: parseFloat(document.getElementById('vacance').value) || 0,
+  };
+}
+
+function compute(inp) {
+  const apport = inp.prix * inp.apportPct / 100;
+  const K = inp.prix - apport;
+  const frais = calcFrais(inp.prix, inp.notairePct, inp.nbPages, inp.typeVendeur);
+  const cashTotal = apport + frais.total;
+  const mensualite = calcMensualite(K, inp.tauxPct, inp.duree);
+  const coutTotal = mensualite * inp.duree * 12;
+  const interets = coutTotal - K;
+
+  // Calcul des revenus locatifs selon le mode choisi
+  let nuits = 0, revenusBrutsEUR = 0, revenusBrutsTND = 0, revenusNetsTND = 0, fraisExploitTND = 0;
+  if (inp.modeLocatif === 'aucun') {
+    // Pas de locatif : tous les revenus sont nuls
+    // (nuits, revenusBrutsEUR, etc. restent à 0)
+  } else if (inp.modeLocatif === 'longueduree') {
+    // Bail longue durée : loyer mensuel × 12, moins vacance, moins frais de gestion
+    const loyerAnnuelBrut = inp.loyerMensuel * 12;
+    const vacanceMontant = loyerAnnuelBrut * (inp.vacance / 100);
+    const gestionMontant = loyerAnnuelBrut * (inp.fraisGestion / 100);
+    revenusBrutsTND = loyerAnnuelBrut;
+    fraisExploitTND = vacanceMontant + gestionMontant;
+    revenusNetsTND = revenusBrutsTND - fraisExploitTND;
+  } else {
+    // Mode Airbnb (par défaut) : tarifs BS/HS, remplissage, frais globaux
+    nuits = 365 * inp.remplissage / 100;
+    revenusBrutsEUR = calcRevenusBrutsEUR(nuits, inp.tarifBS, inp.tarifHS, inp.decoupage);
+    revenusBrutsTND = revenusBrutsEUR * inp.change;
+    revenusNetsTND = revenusBrutsTND * (1 - inp.fraisGlobaux / 100);
+    fraisExploitTND = revenusBrutsTND - revenusNetsTND;
+  }
+
+  const cashflowAnnuel = revenusNetsTND - mensualite * 12;
+  const cashflowMensuel = revenusNetsTND / 12 - mensualite;
+
+  // Bilan patrimonial aux échéances ≤ durée du prêt
+  const echeances = [3, 5, 7, 10, 15, 20, 25].filter(y => y <= inp.duree);
+  if (!echeances.includes(inp.duree)) echeances.push(inp.duree);
+  echeances.sort((a, b) => a - b);
+  const idx = inp.indexationLoyers / 100;
+  const patrimoine = echeances.map(y => {
+    const valeur = inp.prix * Math.pow(1 + inp.valorisation / 100, y);
+    const crd = calcCRD(K, inp.tauxPct, inp.duree, y * 12);
+    // Revenus indexés sur l'inflation à l'année y (les loyers de l'année y sont à un facteur (1+i)^y)
+    const facteurIndex = Math.pow(1 + idx, y);
+    const revenusNetsAnnuelY = revenusNetsTND * facteurIndex;
+    const revenusNetsMensuelY = revenusNetsAnnuelY / 12;
+    // Cash-flow mensuel à l'année y : mensualité reste constante (taux fixe), loyer revalorisé
+    const cashflowMensuelY = revenusNetsMensuelY - mensualite;
+    return { y, valeur, crd, equite: valeur - crd, revenusNetsMensuelY, cashflowMensuelY };
+  });
+
+  // TRI approximatif sur la durée du prêt
+  const valeurFin = inp.prix * Math.pow(1 + inp.valorisation / 100, inp.duree);
+  const crdFin = calcCRD(K, inp.tauxPct, inp.duree, inp.duree * 12);
+  const equiteFin = valeurFin - crdFin;
+  // Cash-flow cumulé avec loyers indexés sur la durée du prêt
+  // Somme géométrique : sum_{k=1..N} revenus × (1+i)^k = revenus × (1+i) × ((1+i)^N - 1) / i
+  let revenuCumule;
+  if (idx === 0) {
+    revenuCumule = revenusNetsTND * inp.duree;
+  } else {
+    revenuCumule = revenusNetsTND * (1 + idx) * (Math.pow(1 + idx, inp.duree) - 1) / idx;
+  }
+  const cfCumule = revenuCumule - mensualite * 12 * inp.duree;
+  const gainNet = equiteFin + cfCumule;
+  let triPct = NaN;
+  if (cashTotal > 0 && gainNet > 0) {
+    triPct = (Math.pow(gainNet / cashTotal, 1 / inp.duree) - 1) * 100;
+  } else if (cashTotal > 0 && gainNet <= 0) {
+    triPct = -100;
+  }
+
+  // Comparatif toutes durées avec cash-flow année 0 ET cash-flow moyen indexé sur la durée
+  const idxForCompare = inp.indexationLoyers / 100;
+  const comparatif = [7, 10, 15, 20, 25].map(d => {
+    const m = calcMensualite(K, inp.tauxPct, d);
+    const cfYear0 = revenusNetsTND / 12 - m;
+    // Cash-flow moyen mensuel sur la durée (loyers indexés)
+    let revenuCumuleD;
+    if (idxForCompare === 0) {
+      revenuCumuleD = revenusNetsTND * d;
+    } else {
+      revenuCumuleD = revenusNetsTND * (1 + idxForCompare) * (Math.pow(1 + idxForCompare, d) - 1) / idxForCompare;
+    }
+    const cfCumuleD = revenuCumuleD - m * 12 * d;
+    const cfMoyen = cfCumuleD / (d * 12);
+    return { duree: d, mensualite: m, cashflowMensuel: cfYear0, cashflowMoyen: cfMoyen };
+  });
+
+  // Cash-flow moyen mensuel indexé sur la durée du prêt actuelle
+  const cashflowMensuelMoyen = cfCumule / (inp.duree * 12);
+
+  // Projection année par année du cash-flow mensuel (loyers indexés, mensualité constante)
+  const cashflowYearly = [];
+  for (let y = 0; y <= inp.duree; y++) {
+    const facteur = Math.pow(1 + idx, y);
+    const revenuMensuelY = (revenusNetsTND / 12) * facteur;
+    cashflowYearly.push({
+      year: y,
+      revenuMensuel: revenuMensuelY,
+      cashflowMensuel: revenuMensuelY - mensualite
+    });
+  }
+
+  // Prix d'acquisition qui rend le cash-flow mensuel = 0
+  // (toutes autres choses égales par ailleurs : apport %, taux, durée, revenus locatifs)
+  const i = inp.tauxPct / 100 / 12;
+  const N = inp.duree * 12;
+  const factor = (i === 0) ? 1 / N : i / (1 - Math.pow(1 + i, -N));
+  const partEmpruntee = 1 - inp.apportPct / 100;
+  let prixNeutre = NaN;
+  if (partEmpruntee > 0 && factor > 0) {
+    prixNeutre = (revenusNetsTND / 12) / (partEmpruntee * factor);
+  }
+
+  return {
+    apport, K, frais, cashTotal, mensualite, coutTotal, interets,
+    nuits, revenusBrutsEUR, revenusBrutsTND, revenusNetsTND, fraisExploitTND,
+    cashflowAnnuel, cashflowMensuel, cashflowMensuelMoyen, cfCumule,
+    cashflowYearly,
+    patrimoine, valeurFin, crdFin, equiteFin,
+    triPct, comparatif, prixNeutre
+  };
+}
+
+function render(inp, r) {
+  // Mise à jour des affichages de range
+  document.getElementById('apport-value').textContent = fmtPct(inp.apportPct);
+  document.getElementById('notaire-value').textContent = fmtPct(inp.notairePct);
+  document.getElementById('taux-value').textContent = fmtPct(inp.tauxPct);
+  document.getElementById('remplissage-value').textContent = fmtPct(inp.remplissage);
+  document.getElementById('frais-globaux-value').textContent = fmtPct(inp.fraisGlobaux);
+  document.getElementById('valorisation-value').textContent = fmtPct(inp.valorisation);
+  document.getElementById('indexation-loyers-value').textContent = fmtPct(inp.indexationLoyers);
+  document.getElementById('frais-gestion-value').textContent = fmtPct(inp.fraisGestion);
+  document.getElementById('vacance-value').textContent = fmtPct(inp.vacance);
+
+  // Show/hide des panneaux d'inputs selon le mode locatif sélectionné
+  document.getElementById('inputs-aucun').style.display = inp.modeLocatif === 'aucun' ? '' : 'none';
+  document.getElementById('inputs-longueduree').style.display = inp.modeLocatif === 'longueduree' ? '' : 'none';
+  document.getElementById('inputs-airbnb').style.display = inp.modeLocatif === 'airbnb' ? '' : 'none';
+
+  // Métadonnée sous le curseur d'apport : montant en TND et EUR
+  document.getElementById('apport-meta').innerHTML = '= ' + cellTND(r.apport, inp.change);
+
+  // KPIs
+  const cfClass = r.cashflowMensuel >= 0 ? 'positive' : 'negative';
+  // Delta entre prix actuel et prix neutre (négatif = on est sous le prix neutre, donc cash-flow > 0)
+  let breakevenBlock = '';
+  if (isFinite(r.prixNeutre) && r.prixNeutre > 0) {
+    const delta = inp.prix - r.prixNeutre;
+    const deltaStr = delta === 0
+      ? 'prix actuel = neutre'
+      : (delta > 0
+          ? `+${fmtTND(delta)} au-dessus`
+          : `${fmtTND(delta)} en dessous`);
+    breakevenBlock = `
+      <div class="breakeven">
+        <span class="be-label">Neutre (cash-flow = 0) à</span>
+        <span class="be-value">${fmtTND(r.prixNeutre)}</span>
+        <span class="be-delta">(${deltaStr})</span>
+      </div>`;
+  }
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi-card ${cfClass}">
+      <div class="label">Cash-flow mensuel</div>
+      <div class="value">${fmtTND(r.cashflowMensuel)}</div>
+      <div class="sub">${fmtEUR(r.cashflowMensuel / inp.change)}</div>
+      ${breakevenBlock}
+    </div>
+    <div class="kpi-card">
+      <div class="label">Cash total à mobiliser</div>
+      <div class="value">${fmtTND(r.cashTotal)}</div>
+      <div class="sub">${fmtEUR(r.cashTotal / inp.change)}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Mensualité prêt</div>
+      <div class="value">${fmtTND(r.mensualite)}</div>
+      <div class="sub">${fmtEUR(r.mensualite / inp.change)}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Revenu net mensuel</div>
+      <div class="value">${fmtTND(r.revenusNetsTND / 12)}</div>
+      <div class="sub">${fmtEUR(r.revenusNetsTND / 12 / inp.change)}</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">TRI estimé / durée prêt</div>
+      <div class="value">${isFinite(r.triPct) ? fmtPct(r.triPct) : '—'}</div>
+      <div class="sub">sur ${inp.duree} ans</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">Équité fin de prêt</div>
+      <div class="value">${fmtTND(r.equiteFin)}</div>
+      <div class="sub">${fmtEUR(r.equiteFin / inp.change)}</div>
+    </div>
+  `;
+
+  // Masquage du champ "Nombre de pages" en mode ancien (inutile dans ce régime)
+  const pagesGroup = document.getElementById('pages-group');
+  if (pagesGroup) {
+    pagesGroup.style.display = inp.typeVendeur === 'ancien' ? 'none' : '';
+  }
+
+  // Alerte de tranche fiscale selon le prix ET le type de vendeur
+  let trancheHTML = '';
+  const fraisPct = inp.prix > 0 ? (r.frais.total / inp.prix) * 100 : 0;
+
+  if (inp.typeVendeur === 'ancien') {
+    // === Régime bien ancien / particulier : 6 % / 8 % / 10 % ===
+    if (inp.prix < 500000) {
+      const distSeuil = 500000 - inp.prix;
+      const surcoutFranchissement = 0.08 * 500000 - 0.06 * inp.prix; // saut à 8 % du nouveau prix
+      const surcoutPur = 0.02 * 500000; // l'écart entre 6 % et 8 % à 500K = 10 000 TND
+      trancheHTML = `<div class="tranche-alert warn"><span class="icon">⚠</span><strong>Régime ancien — Tranche 1</strong> (prix &lt; 500 000 TND) : droit d'enregistrement à <strong>6 %</strong> du prix total (= ${fmtTND(0.06 * inp.prix)}). Frais totaux : <strong>${fmtPct(fraisPct)}</strong> du prix. Franchir 500K fera passer le taux à <strong>8 %</strong> (+${fmtTND(surcoutPur)} d'un coup).</div>`;
+    } else if (inp.prix < 1000000) {
+      const distSeuil = 1000000 - inp.prix;
+      const surcoutPur = 0.02 * 1000000;
+      trancheHTML = `<div class="tranche-alert danger"><span class="icon">⚠</span><strong>Régime ancien — Tranche 2</strong> (500 000 - 999 999 TND) : droit d'enregistrement à <strong>8 %</strong> du prix total (= ${fmtTND(0.08 * inp.prix)}). Frais totaux : <strong>${fmtPct(fraisPct)}</strong> du prix. Franchir 1M fera passer le taux à <strong>10 %</strong> (+${fmtTND(surcoutPur)} d'un coup).</div>`;
+    } else {
+      trancheHTML = `<div class="tranche-alert danger"><span class="icon">⚠</span><strong>Régime ancien — Tranche 3</strong> (≥ 1 000 000 TND) : droit d'enregistrement à <strong>10 %</strong> du prix total (= ${fmtTND(0.10 * inp.prix)}). Frais totaux : <strong>${fmtPct(fraisPct)}</strong> du prix — taux maximum du barème tunisien.</div>`;
+    }
+  } else {
+    // === Régime bien neuf / promoteur agréé ===
+    if (inp.prix < 500000) {
+      const distSeuil = 500000 - inp.prix;
+      const surcoutFranchissement = (0.02 * 500000) - (inp.nbPages * 30);
+      if (distSeuil < 50000) {
+        trancheHTML = `<div class="tranche-alert warn"><span class="icon">⚠</span><strong>Régime neuf — Tranche favorable</strong> mais proche du seuil 500 000 TND (à seulement ${fmtTND(distSeuil)} en dessous). Franchir ce seuil déclenchera le droit complémentaire de 2 % sur la totalité du prix : <strong>+${fmtTND(surcoutFranchissement)} de frais d'un coup</strong>.</div>`;
+      } else {
+        trancheHTML = `<div class="tranche-alert ok"><span class="icon">✓</span><strong>Régime neuf — Tranche favorable</strong> (prix &lt; 500 000 TND). Le droit complémentaire est <strong>nul</strong> et l'enregistrement passe en droit fixe (${inp.nbPages} × 30 TND). Frais totaux : <strong>${fmtPct(fraisPct)}</strong> du prix. Marge avant le saut au seuil 500K : <strong>${fmtTND(distSeuil)}</strong>.</div>`;
+      }
+    } else if (inp.prix < 1000000) {
+      const surcoutFranchissement = 0.02 * 1000000;
+      trancheHTML = `<div class="tranche-alert warn"><span class="icon">⚠</span><strong>Régime neuf — Tranche moyenne</strong> (500 000 - 999 999 TND). Le droit complémentaire de <strong>2 % sur le prix total</strong> (= ${fmtTND(0.02 * inp.prix)}) s'applique. Frais totaux : <strong>${fmtPct(fraisPct)}</strong> du prix. Franchir 1 000 000 TND ajouterait encore <strong>+${fmtTND(surcoutFranchissement)}</strong> (droit compl. passe à 4 %).</div>`;
+    } else {
+      trancheHTML = `<div class="tranche-alert danger"><span class="icon">⚠</span><strong>Régime neuf — Tranche haute</strong> (≥ 1 000 000 TND). Le droit complémentaire de <strong>4 % sur le prix total</strong> (= ${fmtTND(0.04 * inp.prix)}) s'applique. Frais totaux : <strong>${fmtPct(fraisPct)}</strong> du prix.</div>`;
+    }
+  }
+  document.getElementById('tranche-alert').innerHTML = trancheHTML;
+
+  // Décomposition frais — adapté selon le type de vendeur
+  let fraisRows = '';
+  if (inp.typeVendeur === 'ancien') {
+    // Régime ancien : taux unique 6/8/10 % + notaire
+    const tauxAncien = inp.prix < 500000 ? '6' : (inp.prix < 1000000 ? '8' : '10');
+    fraisRows = `
+      <tr><td>Droit d'enregistrement (${tauxAncien} % du prix)</td><td>${cellTND(r.frais.droitEnreg, inp.change)}</td></tr>
+      <tr><td>Honoraires notaire</td><td>${cellTND(r.frais.notaire, inp.change)}</td></tr>
+      <tr class="highlight"><td>Total frais d'acquisition</td><td>${cellTND(r.frais.total, inp.change)}</td></tr>
+    `;
+  } else {
+    // Régime neuf : décomposition complète
+    fraisRows = `
+      <tr><td>CPF (1 % du prix)</td><td>${cellTND(r.frais.cpf, inp.change)}</td></tr>
+      <tr><td>Droit d'enregistrement</td><td>${cellTND(r.frais.droitEnreg, inp.change)}</td></tr>
+      <tr><td>Droit complémentaire</td><td>${cellTND(r.frais.droitCompl, inp.change)}</td></tr>
+      <tr><td>Honoraires notaire</td><td>${cellTND(r.frais.notaire, inp.change)}</td></tr>
+      <tr class="highlight"><td>Total frais d'acquisition</td><td>${cellTND(r.frais.total, inp.change)}</td></tr>
+    `;
+  }
+  document.getElementById('frais-detail').innerHTML = fraisRows;
+
+  // Section A
+  document.getElementById('recap-acquisition').innerHTML = `
+    <tr><td>Prix d'acquisition</td><td>${cellTND(inp.prix, inp.change)}</td></tr>
+    <tr><td>Apport (${fmtPct(inp.apportPct)})</td><td>${cellTND(r.apport, inp.change)}</td></tr>
+    <tr><td>Frais d'acquisition</td><td>${cellTND(r.frais.total, inp.change)}</td></tr>
+    <tr class="highlight"><td>Cash total à mobiliser</td><td>${cellTND(r.cashTotal, inp.change)}</td></tr>
+  `;
+
+  // Section B
+  const ratioInteretCapital = r.K > 0 ? (r.interets / r.K) * 100 : 0;
+  document.getElementById('recap-pret').innerHTML = `
+    <tr><td>Capital emprunté</td><td>${cellTND(r.K, inp.change)}</td></tr>
+    <tr class="highlight"><td>Mensualité (${inp.duree} ans)</td><td>${cellTND(r.mensualite, inp.change)}</td></tr>
+    <tr><td>Coût total du prêt</td><td>${cellTND(r.coutTotal, inp.change)}</td></tr>
+    <tr><td>Intérêts totaux</td><td>${cellTND(r.interets, inp.change)}</td></tr>
+    <tr><td>Ratio intérêts / capital</td><td>${fmtPct(ratioInteretCapital)}</td></tr>
+  `;
+
+  // Section C — Adapte le récap selon le mode locatif
+  let revRows = '';
+  if (inp.modeLocatif === 'aucun') {
+    revRows = `
+      <tr><td colspan="2" style="text-align:center; padding:14px; color:var(--text-muted); font-style:italic;">Mode « Pas de locatif » — aucun revenu locatif modélisé.</td></tr>
+      <tr class="highlight"><td>Revenus nets annuels</td><td>${cellTND(0, inp.change)}</td></tr>
+    `;
+  } else if (inp.modeLocatif === 'longueduree') {
+    revRows = `
+      <tr><td>Loyer mensuel brut</td><td>${cellTND(inp.loyerMensuel, inp.change)}</td></tr>
+      <tr><td>Loyer brut annuel (× 12)</td><td>${cellTND(r.revenusBrutsTND, inp.change)}</td></tr>
+      <tr><td>Vacance locative (${fmtPct(inp.vacance)})</td><td>${cellTND(r.revenusBrutsTND * inp.vacance / 100, inp.change)}</td></tr>
+      <tr><td>Frais de gestion (${fmtPct(inp.fraisGestion)})</td><td>${cellTND(r.revenusBrutsTND * inp.fraisGestion / 100, inp.change)}</td></tr>
+      <tr class="highlight"><td>Revenus nets annuels</td><td>${cellTND(r.revenusNetsTND, inp.change)}</td></tr>
+      <tr class="highlight"><td>Revenus nets mensuels moyens</td><td>${cellTND(r.revenusNetsTND / 12, inp.change)}</td></tr>
+    `;
+  } else {
+    // Airbnb (existant)
+    revRows = `
+      <tr><td>Nuits annuelles louées</td><td><span class="tnd">${fmtNum(r.nuits)} nuits</span></td></tr>
+      <tr><td>Revenus bruts annuels</td><td>${cellTND(r.revenusBrutsTND, inp.change)}</td></tr>
+      <tr><td>Revenus bruts mensuels moyens</td><td>${cellTND(r.revenusBrutsTND / 12, inp.change)}</td></tr>
+      <tr><td>Frais globaux (${fmtPct(inp.fraisGlobaux)})</td><td>${cellTND(r.fraisExploitTND, inp.change)}</td></tr>
+      <tr class="highlight"><td>Revenus nets annuels</td><td>${cellTND(r.revenusNetsTND, inp.change)}</td></tr>
+      <tr class="highlight"><td>Revenus nets mensuels moyens</td><td>${cellTND(r.revenusNetsTND / 12, inp.change)}</td></tr>
+    `;
+  }
+  document.getElementById('recap-revenus').innerHTML = revRows;
+
+  // Section D — cash-flow avec vue année 0 ET vue moyenne indexée sur la durée
+  const cfSign = r.cashflowMensuel >= 0 ? 'positive' : 'negative';
+  const cfSignMoy = r.cashflowMensuelMoyen >= 0 ? 'positive' : 'negative';
+  const cfSignCumul = r.cfCumule >= 0 ? 'positive' : 'negative';
+  document.getElementById('recap-cashflow').innerHTML = `
+    <tr><td colspan="2" style="padding-top:0; padding-bottom:6px; color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:0.4px; border-bottom:none;">Vue année 0 (état au démarrage du projet)</td></tr>
+    <tr><td>Mensualité prêt</td><td>${cellTND(r.mensualite, inp.change)}</td></tr>
+    <tr><td>Revenu net mensuel locatif</td><td>${cellTND(r.revenusNetsTND / 12, inp.change)}</td></tr>
+    <tr class="highlight"><td>Cash-flow mensuel net</td><td><span class="${cfSign}">${fmtTND(r.cashflowMensuel)}</span><span class="eur">(${fmtEUR(r.cashflowMensuel / inp.change)})</span></td></tr>
+    <tr><td>Cash-flow annuel net</td><td><span class="${cfSign}">${fmtTND(r.cashflowAnnuel)}</span><span class="eur">(${fmtEUR(r.cashflowAnnuel / inp.change)})</span></td></tr>
+    <tr><td colspan="2" style="padding-top:14px; padding-bottom:6px; color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:0.4px; border-bottom:none;">Vue moyenne sur la durée du prêt (loyers indexés ${fmtPct(inp.indexationLoyers)}/an)</td></tr>
+    <tr class="highlight"><td>Cash-flow mensuel moyen indexé (${inp.duree} ans)</td><td><span class="${cfSignMoy}">${fmtTND(r.cashflowMensuelMoyen)}</span><span class="eur">(${fmtEUR(r.cashflowMensuelMoyen / inp.change)})</span></td></tr>
+    <tr><td>Cash-flow cumulé sur la durée</td><td><span class="${cfSignCumul}">${fmtTND(r.cfCumule)}</span><span class="eur">(${fmtEUR(r.cfCumule / inp.change)})</span></td></tr>
+  `;
+
+  // Comparatif durées avec colonnes année 0 et cash-flow moyen indexé
+  const compRows = r.comparatif.map(c => {
+    const cls = c.duree === inp.duree ? 'current' : '';
+    const sign0 = c.cashflowMensuel >= 0 ? 'positive' : 'negative';
+    const signM = c.cashflowMoyen >= 0 ? 'positive' : 'negative';
+    return `<tr class="${cls}"><td>${c.duree} ans</td><td>${fmtTND(c.mensualite)}</td><td><span class="${sign0}">${fmtTND(c.cashflowMensuel)}</span></td><td><span class="${signM}">${fmtTND(c.cashflowMoyen)}</span></td></tr>`;
+  }).join('');
+  document.getElementById('comparatif-durees').innerHTML = `
+    <tr><th>Durée</th><th>Mensualité</th><th>CF mensuel an 0</th><th>CF mensuel moyen indexé</th></tr>
+    ${compRows}
+  `;
+
+  // Section E — Patrimoine + projections de revenus indexés sur l'inflation
+  const patRows = r.patrimoine.map(p => {
+    const cfSignP = p.cashflowMensuelY >= 0 ? 'positive' : 'negative';
+    return `
+    <tr><td><strong>À ${p.y} ans</strong></td>
+      <td>${cellTND(p.valeur, inp.change)}</td>
+      <td>${cellTND(p.crd, inp.change)}</td>
+      <td class="highlight" style="font-weight:700">${cellTND(p.equite, inp.change)}</td>
+      <td><span class="tnd">${fmtTND(p.revenusNetsMensuelY)}</span></td>
+      <td><span class="${cfSignP}">${fmtTND(p.cashflowMensuelY)}</span></td>
+    </tr>
+  `;
+  }).join('');
+  document.getElementById('recap-patrimoine').innerHTML = `
+    <tr>
+      <th>Échéance</th>
+      <th>Valeur du bien</th>
+      <th>Capital restant dû</th>
+      <th>Équité</th>
+      <th>Loyer net / mois</th>
+      <th>Cash-flow / mois</th>
+    </tr>
+    ${patRows}
+  `;
+
+  renderCharts(inp, r);
+}
+
+function renderCharts(inp, r) {
+  // 1) Projection du cash-flow mensuel année par année (loyers indexés)
+  const cfYear = r.cashflowYearly;
+  const cfData = cfYear.map(c => c.cashflowMensuel);
+  const cfColors = cfData.map(v => v >= 0 ? '#16a34a' : '#dc2626');
+  if (charts.cf) charts.cf.destroy();
+  charts.cf = new Chart(document.getElementById('chart-cashflow'), {
+    type: 'bar',
+    data: {
+      labels: cfYear.map(c => 'An ' + c.year),
+      datasets: [{
+        label: 'Cash-flow mensuel (TND)',
+        data: cfData,
+        backgroundColor: cfColors,
+        borderRadius: 3,
+        barPercentage: 0.92,
+        categoryPercentage: 0.95,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: {
+          title: ctx => `Année ${cfYear[ctx[0].dataIndex].year}`,
+          label: ctx => [
+            `Cash-flow : ${fmtTND(ctx.parsed.y)}/mois`,
+            `Loyer net : ${fmtTND(cfYear[ctx.dataIndex].revenuMensuel)}/mois`,
+            `Mensualité : ${fmtTND(r.mensualite)}/mois`
+          ]
+        } }
+      },
+      scales: {
+        x: {
+          ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: false }
+        },
+        y: {
+          ticks: { callback: v => fmtNum(v) },
+          grid: {
+            color: ctx => ctx.tick && ctx.tick.value === 0 ? '#0f172a' : '#e2e8f0',
+            lineWidth: ctx => ctx.tick && ctx.tick.value === 0 ? 2 : 1
+          },
+          title: { display: true, text: 'TND/mois', font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  // 2) Patrimoine line chart
+  const years = [];
+  const valeurs = [];
+  const crds = [];
+  for (let y = 0; y <= inp.duree; y++) {
+    years.push(y);
+    valeurs.push(inp.prix * Math.pow(1 + inp.valorisation / 100, y));
+    crds.push(calcCRD(r.K, inp.tauxPct, inp.duree, y * 12));
+  }
+  // Données équité année par année (= valeur projetée - CRD pour chaque année)
+  const equite = valeurs.map((v, i) => v - crds[i]);
+
+  if (charts.pat) charts.pat.destroy();
+  charts.pat = new Chart(document.getElementById('chart-patrimoine'), {
+    type: 'line',
+    data: {
+      labels: years,
+      datasets: [
+        {
+          label: 'Valeur projetée du bien',
+          data: valeurs,
+          borderColor: '#16a34a',
+          backgroundColor: 'rgba(22, 163, 74, 0.08)',
+          tension: 0.1,
+          fill: true,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+        },
+        {
+          label: 'Capital restant dû',
+          data: crds,
+          borderColor: '#dc2626',
+          backgroundColor: 'rgba(220, 38, 38, 0.08)',
+          tension: 0.1,
+          fill: true,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${fmtTND(ctx.parsed.y)}` } }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Années', font: { size: 11 } } },
+        y: { ticks: { callback: v => fmtNum(v) } }
+      }
+    }
+  });
+
+  // 3) Équité construite année par année (valeur du bien − CRD)
+  if (charts.equite) charts.equite.destroy();
+  charts.equite = new Chart(document.getElementById('chart-equite'), {
+    type: 'line',
+    data: {
+      labels: years,
+      datasets: [{
+        label: 'Équité (valeur du bien − CRD)',
+        data: equite,
+        borderColor: '#EC6C0A',
+        backgroundColor: 'rgba(236, 108, 10, 0.15)',
+        tension: 0.15,
+        fill: true,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        pointBackgroundColor: '#EC6C0A',
+        borderWidth: 2.5,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } },
+        tooltip: {
+          callbacks: {
+            title: ctx => `Année ${ctx[0].label}`,
+            label: ctx => [
+              `Équité : ${fmtTND(ctx.parsed.y)} (${fmtEUR(ctx.parsed.y / inp.change)})`,
+              `Valeur du bien : ${fmtTND(valeurs[ctx.dataIndex])}`,
+              `Capital restant dû : ${fmtTND(crds[ctx.dataIndex])}`
+            ]
+          }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Années', font: { size: 11 } } },
+        y: {
+          ticks: { callback: v => fmtNum(v) },
+          title: { display: true, text: 'TND', font: { size: 11 } }
+        }
+      }
+    }
+  });
+}
+
+function refresh() {
+  const inp = getInputs();
+  const r = compute(inp);
+  render(inp, r);
+}
+
+function init() {
+  document.querySelectorAll('#simu input').forEach(el => {
+    el.addEventListener('input', refresh);
+  });
+  document.querySelectorAll('#duree-group label').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('#duree-group label').forEach(l => l.classList.remove('selected'));
+      el.classList.add('selected');
+      refresh();
+    });
+  });
+  document.querySelectorAll('#decoupage-group label').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('#decoupage-group label').forEach(l => l.classList.remove('selected'));
+      el.classList.add('selected');
+      refresh();
+    });
+  });
+  document.querySelectorAll('#vendeur-group label').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('#vendeur-group label').forEach(l => l.classList.remove('selected'));
+      el.classList.add('selected');
+      refresh();
+    });
+  });
+  document.querySelectorAll('#mode-locatif-group label').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('#mode-locatif-group label').forEach(l => l.classList.remove('selected'));
+      el.classList.add('selected');
+      refresh();
+    });
+  });
+  const today = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('footer').innerHTML = `
+    Simulation à titre purement indicatif et non contractuel. Les paramètres par défaut (taux, frais, valorisations)
+    doivent être validés auprès de la BIAT, d'un notaire tunisien et d'un conseiller fiscal avant tout engagement.
+    Ce simulateur ne constitue pas un conseil en investissement. <br>
+    Dernière mise à jour : ${today}.
+  `;
+
+  // Bouton Télécharger PDF : génère un PDF inline et déclenche le téléchargement automatique
+  document.getElementById('pdf-btn').addEventListener('click', () => {
+    generatePDF();
+  });
+
+  refresh();
+}
+
+// =============================================================
+// === Générateur PDF en JavaScript pur (sans aucune lib) ===
+// =============================================================
+// Produit un PDF 1.4 texte structuré avec polices Helvetica intégrées
+// (encodage WinAnsi). Pas de dépendance externe.
+
+class MiniPDF {
+  constructor() {
+    this.objects = [null]; // index 0 réservé
+    this.pageRefs = [];
+    this.pageWidth = 595;   // A4 en points
+    this.pageHeight = 842;
+    this.margin = 40;
+    this.colorText = '0 0 0';
+    this.colorAccent = '0.925 0.424 0.039'; // orange BSV
+    this.colorMuted = '0.4 0.4 0.4';
+    this.fontF1 = this.addObj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
+    this.fontF2 = this.addObj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+    this.fontF3 = this.addObj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>');
+    this.startPage();
+  }
+
+  addObj(content) {
+    this.objects.push(content);
+    return this.objects.length - 1;
+  }
+
+  // Convertit l'Unicode vers WinAnsi (bytes) et échappe pour PDF
+  encode(s) {
+    const map = {
+      'é':'\xE9','è':'\xE8','ê':'\xEA','ë':'\xEB','à':'\xE0','â':'\xE2','ä':'\xE4',
+      'ô':'\xF4','ö':'\xF6','ù':'\xF9','û':'\xFB','ü':'\xFC','ç':'\xE7','î':'\xEE','ï':'\xEF',
+      'É':'\xC9','È':'\xC8','Ê':'\xCA','À':'\xC0','Â':'\xC2','Ô':'\xD4','Ç':'\xC7','Î':'\xCE',
+      '€':'\x80','·':'\xB7','—':'\x97','–':'\x96','’':'\x92','‘':'\x91','“':'\x93','”':'\x94',
+      ' ':' ',' ':' ',' ':' ',
+      '⅓':'1/3','⅔':'2/3','½':'1/2','¼':'1/4','¾':'3/4',
+      '🇹':'','🇳':'' // emojis non rendables
+    };
+    let out = '';
+    for (const c of s) {
+      if (c.charCodeAt(0) < 128) out += c;
+      else out += (map[c] !== undefined ? map[c] : '?');
+    }
+    return out.replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+  }
+
+  startPage() {
+    this.content = '';
+    this.y = this.pageHeight - this.margin;
+  }
+
+  endPage() {
+    const contentObj = this.addObj(`<< /Length ${this.content.length} >>\nstream\n${this.content}\nendstream`);
+    const pageObj = this.addObj(`<< /Type /Page /Parent {PAGES_REF} /Resources << /Font << /F1 ${this.fontF1} 0 R /F2 ${this.fontF2} 0 R /F3 ${this.fontF3} 0 R >> >> /MediaBox [0 0 ${this.pageWidth} ${this.pageHeight}] /Contents ${contentObj} 0 R >>`);
+    this.pageRefs.push(pageObj);
+  }
+
+  ensureSpace(needed) {
+    if (this.y - needed < this.margin + 30) {
+      this.drawFooter();
+      this.endPage();
+      this.startPage();
+    }
+  }
+
+  setColor(rgb) {
+    this.content += `${rgb} rg\n`;
+  }
+
+  text(s, x, y, size = 10, font = 'F1') {
+    this.content += `BT /${font} ${size} Tf ${x} ${y} Td (${this.encode(s)}) Tj ET\n`;
+  }
+
+  // Calcule largeur approximative d'un texte en Helvetica (avantage : juste assez bon pour l'alignement à droite)
+  textWidth(s, size = 10) {
+    // Helvetica : moyenne ~0.5 em pour caractère normal, ~0.55 pour bold
+    return s.length * size * 0.52;
+  }
+
+  title(s) {
+    this.ensureSpace(30);
+    this.setColor(this.colorAccent);
+    this.text(s, this.margin, this.y, 20, 'F2');
+    this.y -= 28;
+    this.setColor(this.colorText);
+  }
+
+  subtitle(s) {
+    this.ensureSpace(16);
+    this.setColor(this.colorMuted);
+    this.text(s, this.margin, this.y, 10, 'F3');
+    this.y -= 18;
+    this.setColor(this.colorText);
+  }
+
+  section(s) {
+    this.ensureSpace(28);
+    this.y -= 6;
+    this.setColor(this.colorAccent);
+    this.text(s, this.margin, this.y, 13, 'F2');
+    // Trait fin sous le titre
+    this.content += `q 0.925 0.424 0.039 RG 0.8 w ${this.margin} ${this.y - 4} m ${this.pageWidth - this.margin} ${this.y - 4} l S Q\n`;
+    this.y -= 18;
+    this.setColor(this.colorText);
+  }
+
+  // Ligne clé : valeur (valeur alignée à droite, en gras)
+  row(label, value) {
+    this.ensureSpace(15);
+    this.text(label, this.margin, this.y, 10, 'F1');
+    const w = this.textWidth(value, 10) * 1.05; // estimation gras
+    this.text(value, this.pageWidth - this.margin - w, this.y, 10, 'F2');
+    this.y -= 14;
+  }
+
+  // Ligne « highlight » avec fond léger
+  rowHighlight(label, value) {
+    this.ensureSpace(17);
+    this.content += `q 0.94 0.95 0.97 rg ${this.margin - 3} ${this.y - 4} ${this.pageWidth - 2 * this.margin + 6} 16 re f Q\n`;
+    this.text(label, this.margin, this.y, 10, 'F2');
+    const w = this.textWidth(value, 10) * 1.05;
+    this.text(value, this.pageWidth - this.margin - w, this.y, 10, 'F2');
+    this.y -= 16;
+  }
+
+  // Texte simple
+  line(s, opts = {}) {
+    const size = opts.size || 10;
+    const font = opts.bold ? 'F2' : (opts.italic ? 'F3' : 'F1');
+    this.ensureSpace(size + 4);
+    if (opts.muted) this.setColor(this.colorMuted);
+    this.text(s, this.margin, this.y, size, font);
+    if (opts.muted) this.setColor(this.colorText);
+    this.y -= (size + 4);
+  }
+
+  spacer(h = 8) {
+    this.y -= h;
+  }
+
+  drawFooter() {
+    const savedY = this.y;
+    this.setColor(this.colorMuted);
+    this.text('Simulateur d\'investissement Tunisie  -  Page ' + (this.pageRefs.length + 1), this.margin, 25, 8, 'F3');
+    this.setColor(this.colorText);
+    this.y = savedY;
+  }
+
+  build() {
+    this.drawFooter();
+    this.endPage();
+
+    // Création des objets racine
+    const pageKids = this.pageRefs.map(p => `${p} 0 R`).join(' ');
+    const pagesObj = this.addObj(`<< /Type /Pages /Kids [${pageKids}] /Count ${this.pageRefs.length} >>`);
+    const catalogObj = this.addObj(`<< /Type /Catalog /Pages ${pagesObj} 0 R >>`);
+
+    // Remplacer {PAGES_REF} dans les pages
+    for (let i = 1; i < this.objects.length; i++) {
+      if (typeof this.objects[i] === 'string') {
+        this.objects[i] = this.objects[i].replace('{PAGES_REF}', `${pagesObj} 0 R`);
+      }
+    }
+
+    // Assemblage
+    let pdf = '%PDF-1.4\n%\xC3\xC3\xC3\xC3\n'; // marqueur binaire requis pour certains lecteurs
+    const offsets = [0];
+    for (let i = 1; i < this.objects.length; i++) {
+      offsets.push(pdf.length);
+      pdf += `${i} 0 obj\n${this.objects[i]}\nendobj\n`;
+    }
+    const xrefOffset = pdf.length;
+    pdf += `xref\n0 ${this.objects.length}\n0000000000 65535 f \n`;
+    for (let i = 1; i < this.objects.length; i++) {
+      pdf += offsets[i].toString().padStart(10, '0') + ' 00000 n \n';
+    }
+    pdf += `trailer\n<< /Size ${this.objects.length} /Root ${catalogObj} 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`;
+    return pdf;
+  }
+
+  download(filename) {
+    const pdfStr = this.build();
+    // Conversion en octets : on garde uniquement les 8 bits de poids faible (WinAnsi-safe)
+    const bytes = new Uint8Array(pdfStr.length);
+    for (let i = 0; i < pdfStr.length; i++) bytes[i] = pdfStr.charCodeAt(i) & 0xFF;
+    const blob = new Blob([bytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+}
+
+function generatePDF() {
+  const inp = getInputs();
+  const r = compute(inp);
+  const pdf = new MiniPDF();
+
+  const today = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const surface = document.getElementById('info-surface').value;
+  const localisation = document.getElementById('info-localisation').value;
+
+  // En-tête
+  pdf.title("Simulateur d'investissement Tunisie");
+  pdf.subtitle(`Édité le ${today}`);
+  pdf.spacer(4);
+
+  // Infos projet
+  pdf.section('0. Informations du projet');
+  pdf.row('Surface', surface);
+  pdf.row('Localisation', localisation);
+
+  // KPIs en tête
+  pdf.section('Indicateurs clés');
+  pdf.rowHighlight('Cash-flow mensuel', `${fmtTND(r.cashflowMensuel)}  (${fmtEUR(r.cashflowMensuel / inp.change)})`);
+  if (isFinite(r.prixNeutre)) {
+    pdf.row("  → Prix neutre (cash-flow = 0)", `${fmtTND(r.prixNeutre)}`);
+  }
+  pdf.row('Cash total à mobiliser', `${fmtTND(r.cashTotal)}  (${fmtEUR(r.cashTotal / inp.change)})`);
+  pdf.row('Mensualité prêt', `${fmtTND(r.mensualite)}  (${fmtEUR(r.mensualite / inp.change)})`);
+  pdf.row('Revenu net mensuel', `${fmtTND(r.revenusNetsTND / 12)}  (${fmtEUR(r.revenusNetsTND / 12 / inp.change)})`);
+  pdf.row('TRI estimé', `${isFinite(r.triPct) ? fmtPct(r.triPct) : '-'} sur ${inp.duree} ans`);
+  pdf.row('Équité fin de prêt', `${fmtTND(r.equiteFin)}  (${fmtEUR(r.equiteFin / inp.change)})`);
+
+  // Acquisition
+  pdf.section('1. Acquisition');
+  pdf.row("Prix d'acquisition TTC", `${fmtTND(inp.prix)}  (${fmtEUR(inp.prix / inp.change)})`);
+  pdf.row(`Apport (${fmtPct(inp.apportPct)})`, `${fmtTND(r.apport)}  (${fmtEUR(r.apport / inp.change)})`);
+  pdf.row('Taux de change EUR/TND', inp.change.toFixed(2));
+
+  // Frais
+  pdf.section("2. Frais d'acquisition");
+  pdf.row('Type de vendeur', inp.typeVendeur === 'ancien' ? 'Ancien (particulier)' : 'Neuf (promoteur agréé)');
+  if (inp.typeVendeur === 'ancien') {
+    const tauxA = inp.prix < 500000 ? 6 : (inp.prix < 1000000 ? 8 : 10);
+    pdf.row(`Droit d'enregistrement (${tauxA} %)`, `${fmtTND(r.frais.droitEnreg)}  (${fmtEUR(r.frais.droitEnreg / inp.change)})`);
+  } else {
+    pdf.row('CPF (1 % du prix)', `${fmtTND(r.frais.cpf)}  (${fmtEUR(r.frais.cpf / inp.change)})`);
+    pdf.row("Droit d'enregistrement", `${fmtTND(r.frais.droitEnreg)}  (${fmtEUR(r.frais.droitEnreg / inp.change)})`);
+    pdf.row('Droit complémentaire', `${fmtTND(r.frais.droitCompl)}  (${fmtEUR(r.frais.droitCompl / inp.change)})`);
+  }
+  pdf.row(`Honoraires notaire (${fmtPct(inp.notairePct)})`, `${fmtTND(r.frais.notaire)}  (${fmtEUR(r.frais.notaire / inp.change)})`);
+  pdf.rowHighlight("Total frais d'acquisition", `${fmtTND(r.frais.total)}  (${fmtEUR(r.frais.total / inp.change)})`);
+  pdf.rowHighlight('Cash total à mobiliser', `${fmtTND(r.cashTotal)}  (${fmtEUR(r.cashTotal / inp.change)})`);
+
+  // Prêt
+  pdf.section('3. Prêt BIAT');
+  pdf.row('Taux annuel nominal', fmtPct(inp.tauxPct));
+  pdf.row('Durée du prêt', `${inp.duree} ans`);
+  pdf.row('Capital emprunté', `${fmtTND(r.K)}  (${fmtEUR(r.K / inp.change)})`);
+  pdf.rowHighlight(`Mensualité (${inp.duree} ans)`, `${fmtTND(r.mensualite)}  (${fmtEUR(r.mensualite / inp.change)})`);
+  pdf.row('Coût total du prêt', `${fmtTND(r.coutTotal)}  (${fmtEUR(r.coutTotal / inp.change)})`);
+  pdf.row('Intérêts totaux', `${fmtTND(r.interets)}  (${fmtEUR(r.interets / inp.change)})`);
+  pdf.row('Ratio intérêts / capital', fmtPct(r.K > 0 ? (r.interets / r.K) * 100 : 0));
+
+  // Revenus locatifs (adapté au mode)
+  const modeLabel = inp.modeLocatif === 'aucun' ? 'Pas de locatif'
+                  : inp.modeLocatif === 'longueduree' ? 'Longue durée (bail annuel)'
+                  : 'Airbnb (courte durée)';
+  pdf.section('4. Revenus locatifs');
+  pdf.row('Mode de location', modeLabel);
+  if (inp.modeLocatif === 'aucun') {
+    pdf.line('Aucun revenu locatif modélisé.', { italic: true });
+    pdf.rowHighlight('Revenus nets annuels', `${fmtTND(0)}  (${fmtEUR(0)})`);
+  } else if (inp.modeLocatif === 'longueduree') {
+    pdf.row('Loyer mensuel brut', `${fmtTND(inp.loyerMensuel)}  (${fmtEUR(inp.loyerMensuel / inp.change)})`);
+    pdf.row('Loyer brut annuel', `${fmtTND(r.revenusBrutsTND)}  (${fmtEUR(r.revenusBrutsTND / inp.change)})`);
+    pdf.row(`Vacance locative (${fmtPct(inp.vacance)})`, `${fmtTND(r.revenusBrutsTND * inp.vacance / 100)}`);
+    pdf.row(`Frais de gestion (${fmtPct(inp.fraisGestion)})`, `${fmtTND(r.revenusBrutsTND * inp.fraisGestion / 100)}`);
+    pdf.rowHighlight('Revenus nets annuels', `${fmtTND(r.revenusNetsTND)}  (${fmtEUR(r.revenusNetsTND / inp.change)})`);
+    pdf.rowHighlight('Revenus nets mensuels moyens', `${fmtTND(r.revenusNetsTND / 12)}  (${fmtEUR(r.revenusNetsTND / 12 / inp.change)})`);
+  } else {
+    pdf.row('Tarif basse saison', `${inp.tarifBS} EUR/nuit`);
+    pdf.row('Tarif haute saison', `${inp.tarifHS} EUR/nuit`);
+    pdf.row('Taux de remplissage', fmtPct(inp.remplissage));
+    pdf.row('Découpage saisonnier', `Option ${inp.decoupage}`);
+    pdf.row('Frais globaux', fmtPct(inp.fraisGlobaux));
+    pdf.row('Nuits annuelles louées', `${Math.round(r.nuits)} nuits`);
+    pdf.row('Revenus bruts annuels', `${fmtTND(r.revenusBrutsTND)}  (${fmtEUR(r.revenusBrutsTND / inp.change)})`);
+    pdf.row('Frais globaux annuels', `${fmtTND(r.fraisExploitTND)}  (${fmtEUR(r.fraisExploitTND / inp.change)})`);
+    pdf.rowHighlight('Revenus nets annuels', `${fmtTND(r.revenusNetsTND)}  (${fmtEUR(r.revenusNetsTND / inp.change)})`);
+    pdf.rowHighlight('Revenus nets mensuels moyens', `${fmtTND(r.revenusNetsTND / 12)}  (${fmtEUR(r.revenusNetsTND / 12 / inp.change)})`);
+  }
+
+  // Cash-flow
+  pdf.section('5. Cash-flow opérationnel');
+  pdf.line('Vue année 0 :', { bold: true });
+  pdf.row('Mensualité prêt', `${fmtTND(r.mensualite)}  (${fmtEUR(r.mensualite / inp.change)})`);
+  pdf.row('Revenu net mensuel', `${fmtTND(r.revenusNetsTND / 12)}  (${fmtEUR(r.revenusNetsTND / 12 / inp.change)})`);
+  pdf.rowHighlight('Cash-flow mensuel net', `${fmtTND(r.cashflowMensuel)}  (${fmtEUR(r.cashflowMensuel / inp.change)})`);
+  pdf.row('Cash-flow annuel net', `${fmtTND(r.cashflowAnnuel)}  (${fmtEUR(r.cashflowAnnuel / inp.change)})`);
+  pdf.spacer(6);
+  pdf.line(`Vue moyenne sur la durée du prêt (loyers indexés ${fmtPct(inp.indexationLoyers)}/an) :`, { bold: true });
+  pdf.rowHighlight(`Cash-flow mensuel moyen (${inp.duree} ans)`, `${fmtTND(r.cashflowMensuelMoyen)}  (${fmtEUR(r.cashflowMensuelMoyen / inp.change)})`);
+  pdf.row('Cash-flow cumulé sur la durée', `${fmtTND(r.cfCumule)}  (${fmtEUR(r.cfCumule / inp.change)})`);
+
+  // Comparatif durées
+  pdf.spacer(6);
+  pdf.line('Comparatif des durées de prêt (CF mensuel an 0 / CF moyen indexé) :', { bold: true });
+  for (const c of r.comparatif) {
+    const mark = c.duree === inp.duree ? '  >' : '   ';
+    pdf.line(`${mark} ${c.duree} ans :  mens. ${fmtTND(c.mensualite)}  -  an 0: ${fmtTND(c.cashflowMensuel)}/mois  -  moyen indexé: ${fmtTND(c.cashflowMoyen)}/mois`);
+  }
+
+  // Patrimoine
+  pdf.section('6. Bilan patrimonial & projections');
+  pdf.row('Valorisation annuelle du bien', `${fmtPct(inp.valorisation)} / an`);
+  pdf.row('Indexation annuelle des loyers', `${fmtPct(inp.indexationLoyers)} / an`);
+  pdf.spacer(4);
+  pdf.line('Projections aux échéances :', { bold: true });
+  for (const p of r.patrimoine) {
+    pdf.line(`  À ${p.y} ans :  valeur ${fmtTND(p.valeur)}  -  CRD ${fmtTND(p.crd)}  -  équité ${fmtTND(p.equite)}`);
+    pdf.line(`              loyer net ${fmtTND(p.revenusNetsMensuelY)}/mois  -  cash-flow ${fmtTND(p.cashflowMensuelY)}/mois`);
+  }
+
+  // Note de pied
+  pdf.spacer(20);
+  pdf.line('Simulation indicative - paramètres à valider avec BIAT et notaire tunisien.', { italic: true, muted: true, size: 9 });
+  pdf.line('Note : ce PDF contient toutes les données numériques. Les graphiques restent consultables', { italic: true, muted: true, size: 9 });
+  pdf.line('dans le simulateur interactif en ligne.', { italic: true, muted: true, size: 9 });
+
+  pdf.download(`simulateur-investissement-tunisie-${new Date().toISOString().slice(0,10)}.pdf`);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
+</script>
+
+</body>
+</html>
